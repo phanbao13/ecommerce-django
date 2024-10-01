@@ -19,7 +19,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Initialize environment variables
 env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env(env_file= str(BASE_DIR) + "/.env")
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -141,7 +141,7 @@ STATIC_ROOT = BASE_DIR / "static"
 STATICFILES_DIRS = ["greatkart/static"]
 
 # Media
-MEDIA_URL = "/media/"
+MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 MESSAGE_TAGS = {
@@ -154,8 +154,8 @@ MESSAGE_TAGS = {
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")  # Replace with your email host
-EMAIL_PORT = os.getenv("EMAIL_PORT", 587) # Replace with your email port
+EMAIL_HOST = os.getenv("EMAIL_HOST")  # Replace with your email host
+EMAIL_PORT = os.getenv("EMAIL_PORT") # Replace with your email port
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  # Your email
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # Your password
 
