@@ -60,13 +60,48 @@ def product_detail(request, category_slug, product_slug=None):
 
 
 def search(request):
-    if "q" in request.GET:
-        q = request.GET.get("q")
-        products = Product.objects.order_by("-created_date").filter(
+    # Start with all products
+    products = Product.objects.all()
+
+    # Search query
+    q = request.GET.get("q")
+    if q:
+        products = products.filter(
             Q(product_name__icontains=q) | Q(description__icontains=q)
         )
-        product_count = products.count()
-    context = {"products": products, "q": q, "product_count": product_count}
+
+    # Get size filter values from request
+    sizes = request.GET.getlist("size")  # Get a list of selected sizes
+
+    # Get min and max price values from request
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
+    if sizes:
+        products = products.filter(
+            variation__variation_category="size", variation__variation_value__in=sizes
+        ).distinct()
+        # products = products.filter(price__gte=float(min_price))  # Filter by min price
+        # products = products.filter(price__lte=float(max_price))  # Filter by max price
+
+    # Apply price filters if provided
+    if min_price:
+        products = products.filter(price__gte=float(min_price))  # Filter by min price
+    if max_price:
+        products = products.filter(price__lte=float(max_price))  # Filter by max price
+
+    # Get the total count of filtered products
+    product_count = products.count()
+
+    # Prepare context for rendering
+    context = {
+        "products": products,
+        "q": q,
+        "product_count": product_count,
+        "selected_sizes": sizes,
+        "min_price": min_price,
+        "max_price": max_price,
+    }
+
     return render(request, "store/store.html", context=context)
 
 
