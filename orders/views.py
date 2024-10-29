@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 from carts.models import CartItem
 from .forms import OrderForm
@@ -18,10 +18,12 @@ def sendEmail(request, order):
     send_email = EmailMessage(mail_subject, message, to=[to_email])
     send_email.send()
 
+def is_ajax(req):
+    return req.META.get("HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest'
 
 def payments(request):
     try:
-        if request.is_ajax() and request.method == "POST":
+        if is_ajax(request) and request.method == "POST":
             data = request.POST
             order_id = data["orderID"]
             trans_id = data["transID"]
