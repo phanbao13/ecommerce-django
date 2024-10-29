@@ -1,5 +1,4 @@
-from re import split
-from carts.models import Cart, CartItem
+#Libraries
 from django.shortcuts import redirect, render
 from django.contrib import messages, auth
 from django.contrib.sites.shortcuts import get_current_site
@@ -9,9 +8,13 @@ from django.utils.encoding import force_bytes
 from django.core.mail import EmailMessage
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
-
+#Forms
 from .forms import RegistrationForm
+#Models
+from carts.models import Cart, CartItem
+from orders.models import Order
 from accounts.models import Account
+#Views
 from carts.views import _cart_id
 
 import requests
@@ -152,7 +155,8 @@ def activate(request, uidb64, token):
 
 @login_required(login_url="login")
 def dashboard(request):
-    return render(request, "accounts/dashboard.html")
+    orders = Order.objects.filter(user=request.user).order_by("-created_at")
+    return render(request, "accounts/dashboard.html", {"orders": orders})
 
 
 def forgotPassword(request):

@@ -1,22 +1,25 @@
-from orders.models import OrderProduct
 from django.contrib import messages
-from store.forms import ReviewForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator
 from django.db.models import Q
 
 from store.models import Product, ReviewRating
 from carts.models import Cart, CartItem
+from orders.models import OrderProduct
 from category.models import Category
+
 from carts.views import _cart_id
+from store.forms import ReviewForm
 
 
 def store(request, category_slug=None):
     if category_slug is not None:
         categories = get_object_or_404(Category, slug=category_slug)
-        products = Product.objects.all().filter(category=categories, is_available=True)
+        products = Product.objects.filter(
+            category=categories, is_available=True
+        ).order_by("id")
     else:
-        products = Product.objects.all().filter(is_available=True).order_by("id")
+        products = Product.objects.filter(is_available=True).order_by("id")
 
     page = request.GET.get("page")
     page = page or 1
